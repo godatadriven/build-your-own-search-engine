@@ -64,7 +64,7 @@ dependencies:
 
 ```
 ### Step 2: Create your documents file
-We want our search index to help us find relevant documents. For this demo, we are going to index information about hotels, but this can be any type of information.
+We want our search index to help us find relevant documents. For this tutorial, we are going to index information about hotels, but this can be any type of information.
 ```
 # hotel_documents.json
 [
@@ -285,7 +285,7 @@ Also, when we look at our approach from a higher level, you might notice that yo
 The same is true for the interface. For now we used Streamlit, but you can replace this with different interfaces when your requirments demand so. 
 
 # Conclusion
-In this blog, we've showed that it is possible to build a simple analytics engine with and interface with python. We've also shown that deploying it as a minimal viable product is not too complex when we use Azure App Services. In the process we've seen to use Azure Cognitive Search to build your own search engine. You can change the analytics engine, with any python package or API
+In this tutorial, we've showed that it is possible to build a simple analytics engine with and interface with python. We've also shown that deploying it as a minimal viable product is not too complex when we use Azure App Services. In the process we've seen to use Azure Cognitive Search to build your own search engine. You can change the analytics engine, with any python package or API
 
 I hope that you will put this tutorial to creative use in the future!
 

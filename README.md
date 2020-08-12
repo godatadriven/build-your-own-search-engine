@@ -3,7 +3,12 @@ Productionizing ML: build your own search engine
 # Build your own search engine
 There are many ways to put your data science work into production. But there is one thing they all have in common. It never comes easy. Every now and then you come across a pragmatic approach that is simple and works in standard occasions. I’m about to explain one of these. The use case we’re covering is building a private google like search engine and interface.
 
+![](img/my-own-search-engine.gif)
+
 To get to this point we need an **analytics engine** to rank the documents we want to search through. We will use [Azure Cognitive Search](https://pypi.org/project/azure-search-documents/), but you could also choose alternatives such as [Elasticsearch](https://elasticsearch-py.readthedocs.io/en/master/). Also we must have a **user interface** to interact with the search engine, and to display results. We choose [Streamlit](https://www.streamlit.io/).Eventually we need to deploy the solution somewhere, and limit access to it with some **access management**. We decided to go with docker, as it is cloud agnostic. In this example however, we deploy the docker image with Azure App Services. With Azure Active Directory your can limit access to people within your network for example. 
+
+The infrastructure will look something like this:
+![](img/infra.png)
 
 ## Dependencies
 To build your own search enging you must have an [Azure subscription](https://azure.microsoft.com/en-us/free/) and create an [Azure Cognitive Search service](https://docs.microsoft.com/en-us/azure/search/search-create-service-portal). Follow the links to get set up.

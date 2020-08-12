@@ -90,9 +90,10 @@ We want our search index to help us find relevant documents. For this demo, we a
     "Description": "High end luxury hotel in an expensive neighbourhood"
   }
 ]
-
+```
 ### Step 3: Create your index file
 The search API requires a predefined index. In this index you specify which fields can be inspected in the documents that you will upload. You can also state the data types, how text fields should be analyzed and many more optios. We must define the index based on the documents that we want to index. For now, just create the hotel_index.py with the following code:
+
 ```
 #hotel_index.py
 from azure.search.documents.indexes.models import ( 
@@ -112,18 +113,17 @@ fields = [
         SearchableField(name="Description", type=SearchFieldDataType.String,analyzer_name='en.lucene'),
         SimpleField(name="Rating", type=SearchFieldDataType.Double),
         SimpleField(name="Rooms", type=SearchFieldDataType.Int32),
-        
-    ]
+        ]
 
 
 index = SearchIndex(
     name=name,
     fields=fields,
-)
+    )
 ```
 
 
-```
+
 ### Step 4: Create your initialization script
 Uptil now, the search API does not know about the index and the documents yet. Therefore it must be initialized. We will first initalize the index, and then upload our documents to the search engine. It will then index the documents according to the index that you provided. Create the initialize_acs.py as follows:
 

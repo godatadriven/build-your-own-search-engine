@@ -1,0 +1,23 @@
+[
+  {
+    "HotelId": "1",
+    "HotelName": "Seaside Inn",
+    "Rating": 4.1,
+    "Rooms": 5,
+    "Description": "This wonderfull little in is located at a 2 minute walk from the beach"
+  },
+  {
+    "HotelId": "2",
+    "HotelName": "Dannies Hotel",
+    "Rating": 3.5,
+    "Rooms": 3,
+    "Description": "Dannies is a small hotel in the country side."
+  },
+  {
+    "HotelId": "3",
+    "HotelName": "Prominent Hotel",
+    "Rating": 4.5,
+    "Rooms": 100,
+    "Description": "High end luxury hotel in an expensive neighbourhood"
+  }
+]

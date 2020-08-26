@@ -115,6 +115,7 @@ else:
     response = requests.post(
     search_url, headers=headers, json=search_body
     ).json()
+
     results_df = pd.DataFrame(response.get("value"))
     results_df = results_df.reset_index(drop=False)
     results_df["nr_results"] = response.get("@odata.count")
@@ -123,7 +124,7 @@ else:
 
     #Write 10 results
     st.write(f'Search results ({response.get("@odata.count")}):')
-    for i, record in paginator(f"Select a results (capped at 100/{response.get('@odata.count')})", list(results_df)):
+    for i, record in paginator(f"Select a results (capped at 100/{response.get('@odata.count')})", list(results_df['title'])):
         st.write('%s. **%s**' % (i, record))
 
     #Download all results to CSV

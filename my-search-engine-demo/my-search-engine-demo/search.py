@@ -25,13 +25,13 @@ class SearchService:
         API key: secret of search service
         API version: version of search API
         """
-        self.url = os.environ["SEARCH_ENDPOINT"]
+        self.url = os.environ["ACS_ENDPOINT"]
         self.headers = {
             "Content-Type": "application/json",
             "api-key": os.environ['ACS_API_KEY'],
         }
         self.api_version = "api-version=2020-06-30"
-        self.connection_string = os.environ['PLAYGROUND_CONN_STR']
+        self.connection_string = os.environ['SA_CONN_STR']
         self.container_name = "covid-news"
         self.index_name = "covid-19-index"
         self.indexer_name = "covid-19-indexer"

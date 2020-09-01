@@ -88,7 +88,7 @@ search_query = st.text_input(
 
 #Search API
 index_name = "covid-19-index"
-endpoint = os.environ["SEARCH_ENDPOINT"]
+endpoint = os.environ["ACS_ENDPOINT"]
 credential = os.environ["ACS_API_KEY"]
 headers = {
             "Content-Type": "application/json",
@@ -101,7 +101,7 @@ search_body = {
     "search": search_query,
     "searchFields": "title",
     "searchMode": "all",
-    "select": "title",
+    "select": "title, body",
     "top": 100,
 }
 
@@ -124,8 +124,14 @@ else:
 
     #Write 10 results
     st.write(f'Search results ({response.get("@odata.count")}):')
-    for i, record in paginator(f"Select a results (capped at 100/{response.get('@odata.count')})", list(results_df['title'])):
-        st.write('%s. **%s**' % (i, record))
+    # for i, record in paginator(f"Select a results (capped at 100/{response.get('@odata.count')})", list(results_df['title'])):
+    #     st.write('%s. **%s**' % (i, record))
+    record_list = []
+    _ = [record_list.append({'title':record["title"],'body':record["body"]}) for record in response.get('value')]
+
+    for i, record in paginator(f"Select a results (capped at 100/{response.get('@odata.count')})", record_list):
+        st.write('%s. **%s**' % (i, record['title']))
+        st.write('%s' % (record['body']))
 
     #Download all results to CSV
     st.sidebar.markdown(get_table_download_link(results_df, search_query), unsafe_allow_html=True)

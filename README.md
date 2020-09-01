@@ -1,11 +1,11 @@
 Productionizing ML: build your own search engine
 
 # Build your own search engine
-There are many ways to put your data science work into production. But there is one thing they all have in common. It never comes easy. Every now and then you come across a pragmatic approach that is simple and works in standard occasions. I’m about to explain one of these. The use case we’re covering is building a private google like search engine and interface.
+There are many ways to put your data science work into production. But there is one thing they all have in common. It never comes easy. Every now and then you come across a pragmatic approach that is simple and works in standard occasions. I’m about to explain one of these. The use case we’re covering is building a private google like search engine and interface to query news articles about Covid-19. The dataset contains 550K articles scraped from the web. The dataset was provided by [Aylien](https://aylien.com/coronavirus-news-dataset/).
 
-![](img/my-own-search-engine.gif)
+![](img/covid-19-search.gif)
 
-To get to this point we need an **analytics engine** to rank the documents we want to search through. We will use [Azure Cognitive Search](https://pypi.org/project/azure-search-documents/), but you could also choose alternatives such as [Elasticsearch](https://elasticsearch-py.readthedocs.io/en/master/). Also we must have a **user interface** to interact with the search engine, and to display results. We choose [Streamlit](https://www.streamlit.io/).Eventually we need to deploy the solution somewhere, and limit access to it with some **access management**. We decided to go with docker, as it is cloud agnostic. In this example however, we deploy the docker image with Azure App Services. With Azure Active Directory your can limit access to people within your network for example. 
+To get to this point we need an **analytics engine** to rank the documents we want to search through. We will use [Azure Cognitive Search](https://pypi.org/project/azure-search-documents/), but you could also choose alternatives such as [Elasticsearch](https://elasticsearch-py.readthedocs.io/en/master/). Also we must have a **user interface** to interact with the search engine, and to display results. We choose [Streamlit](https://www.streamlit.io/).Eventually we need to deploy the solution somewhere, and possibly limit access to it with some **access management**. We decided to go with docker, as it is cloud agnostic. In this example however, we deploy the docker image with Azure App Services. With Azure Active Directory your can limit access to people within your network for example. 
 
 The infrastructure will look something like this:
 ![](img/infra.png)
@@ -13,7 +13,6 @@ The infrastructure will look something like this:
 ## Dependencies
 To build your own search enging you must have an [Azure subscription](https://azure.microsoft.com/en-us/free/) and create an [Azure Cognitive Search service](https://docs.microsoft.com/en-us/azure/search/search-create-service-portal). Follow the links to get set up.
 Additionally you need to install [Docker](https://docs.docker.com/get-docker/) to run your solution on your machinie.
-
 
 ## Setting up the API
 * Follow the [Manual](https://docs.microsoft.com/en-us/azure/search/search-create-service-portal) to create the service
@@ -26,7 +25,7 @@ To make sure your credentials do not end up in your code repositories, add your 
 I work on mac and added the following lines to my .bash_profile file. 
 ```
 export ACS_API_KEY=<admin-key>
-export SEARCH_ENDPOINT=<service url>
+export ACI_ENDPOINT=<service url>
 ```
 To make sure that they're loaded in your terminal run:
 ```
@@ -34,18 +33,7 @@ source ~/.bash_profile
 ```
 If you work on a different Operating System, adding the environment variables might be different.
 
-## Creating the following folder structure
-To complete this tutorial, you'll  need to end up with the following folder structure
-```
-my-search-engine-demo
-    ├── Dockerfile 
-    ├── demo_environment.yml
-    └── my-search-engine-demo
-        ├── hotel_documents.json
-        ├── hotel_index.py
-        ├── initialize_acs.py
-        └── user_interface.py
-```
+
 ## The code
 In ten steps, we will explain how to get your search engine running. The code can also be found in the Clone this example from the [repository](https://github.com/godatadriven/build-your-own-search-engine).
 
@@ -255,13 +243,16 @@ CMD streamlit run ./my-search-engine-demo/user_interface.py
 ```
 ### Step 7: Run your application
 To build the docker image run:
+
 ```
-docker build -t my-search-enginge-demo:latest .
+docker build --build-arg BUILDTIME_ACS_API_KEY=${ACS_API_KEY} --build-arg BUILDTIME_ACS_ENDPOINT=${ACS_ENDPOINT} --build-arg BUILDTIME_SA_CONN_STR=${SA_CONN_STR} -t my-search-engine-demo:latest
+ .
 ```
+
 
 To run the image in a docker container:
 ```
-docker run -p 8501:8501 --env ACS_API_KEY=${ACS_API_KEY} --env SEARCH_ENDPOINT=${SEARCH_ENDPOINT} my-search-enginge-demo:latest
+docker run -p 80:80 my-search-engine-demo:latest
 ```
 
 ### Step 8: Test your application

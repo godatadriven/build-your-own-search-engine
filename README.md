@@ -39,185 +39,31 @@ In ten steps, we will explain how to get your search engine running. The code ca
 
 ### Step 1: Create your environment file
 Before we write any code, we will specify our dependencies in an environment file. We will use this file to let conda install the required dependencies in our Docker image later. Add the following to the #demo-environment.yml
-```
-#demo_environment.yml
-name: acs_demo
-channels:
-  - conda-forge
-  - defaults
-dependencies:
-  - pip=20.2.1
-  - python=3.8.5
-  - requests=2.24.0
-  - setuptools=49.2.1
-  
-  - pip:
-    - azure-search-documents==11.0.0
-    - streamlit==0.64.0
 
-```
+## NEEDS REWRITE
+
 ### Step 2: Create your documents file
 We want our search index to help us find relevant documents. For this tutorial, we are going to index information about hotels, but this can be any type of information.
-```
-# hotel_documents.json
-[
-  {
-    "HotelId": "1",
-    "HotelName": "Seaside Inn",
-    "Rating": 4.1,
-    "Rooms": 5,
-    "Description": "This wonderfull little in is located at a 2 minute walk from the beach"
-  },
-  {
-    "HotelId": "2",
-    "HotelName": "Dannies Hotel",
-    "Rating": 3.5,
-    "Rooms": 3,
-    "Description": "Dannies is a small hotel in the country side."
-  },
-  {
-    "HotelId": "3",
-    "HotelName": "Prominent Hotel",
-    "Rating": 4.5,
-    "Rooms": 100,
-    "Description": "High end luxury hotel in an expensive neighbourhood"
-  }
-]
-```
+
+## NEEDS REWRITE
+
 ### Step 3: Create your index file
 The search API requires a predefined index. In this index you specify which fields can be inspected in the documents that you will upload. You can also state the data types, how text fields should be analyzed and many more optios. We must define the index based on the documents that we want to index. For now, just create the hotel_index.py with the following code:
-
-```
-#hotel_index.py
-from azure.search.documents.indexes.models import ( 
-    ComplexField, 
-    CorsOptions, 
-    SearchIndex, 
-    ScoringProfile, 
-    SearchFieldDataType, 
-    SimpleField, 
-    SearchableField 
-)
-
-name = "hotels"
-fields = [
-        SimpleField(name="HotelId", type=SearchFieldDataType.String, key=True),
-        SearchableField(name="HotelName", type=SearchFieldDataType.String,analyzer_name='en.lucene'),
-        SearchableField(name="Description", type=SearchFieldDataType.String,analyzer_name='en.lucene'),
-        SimpleField(name="Rating", type=SearchFieldDataType.Double),
-        SimpleField(name="Rooms", type=SearchFieldDataType.Int32),
-        ]
-
-
-index = SearchIndex(
-    name=name,
-    fields=fields,
-    )
-```
-
-
+## NEEDS REWRITE
 
 ### Step 4: Create your initialization script
 Uptil now, the search API does not know about the index and the documents yet. Therefore it must be initialized. We will first initalize the index, and then upload our documents to the search engine. It will then index the documents according to the index that you provided. Create the initialize_acs.py as follows:
 
-```
-# initialize_acs.py
-import json
-import os
+## NEEDS REWRITE
 
-from azure.core.credentials import AzureKeyCredential
-from azure.core.exceptions import HttpResponseError
-from azure.search.documents import SearchClient
-from azure.search.documents.indexes import SearchIndexClient
-
-from hotel_index import index
-
-index_name = "hotels"
-endpoint = os.environ["SEARCH_ENDPOINT"]
-credential = AzureKeyCredential(os.environ["ACS_API_KEY"])
-
-
-def initialize_index(endpoint:str, index:str, credential:str):
-    """Create a search index
-
-    Args:
-        endpoint (str): url to azure cognitive search
-        index (str): document index
-        credential (str): azure cognitive search admin-key
-    """
-    client = SearchIndexClient(endpoint, credential)
-    try:
-        result = client.create_index(index)
-    except HttpResponseError:
-        pass
-
-
-def upload_documents(endpoint:str, index_name:str, credential:str, documents:str):
-    """Upload files that must be indexed
-
-    Args:
-        endpoint (str): url to azure cognitive search
-        index_name (str): document index name
-        credential (str): azure cognitive search admin-key
-        documents (str): json file with documents according to the index schema
-    """
-    search_client = SearchClient(
-        endpoint=endpoint, index_name=index_name, credential=credential
-    )
-    abspath = os.path.join(os.path.dirname(os.path.abspath(__file__)), documents)
-
-    with open(abspath) as json_file:
-        documents = json.load(json_file)
-
-    result = search_client.upload_documents(documents=documents)
-
-
-if __name__ == "__main__":
-    initialize_index(endpoint, index, credential)
-    upload_documents(endpoint, "hotels", credential, "hotel_documents.json")
-
-```
 To initialize the API, run the file
 ```
-python my-search-engine-demo/initialize_acs.py
+python my-search-engine-demo/search.py
 ```
 
 ### Step 5: Create your user interface script
 For the user interface, we want a search bar, and a list with tanked results. We will create them with Streamlit. To connect the interface with the API, we will connect to the search API and send the search query to it. The results that come back will be rendered as a dataframe. To replicate the UI, create the user_interface.py as follows: 
 
-```
-# user_interface.py
-
-import os
-
-import pandas as pd
-from azure.core.credentials import AzureKeyCredential
-from azure.search.documents import SearchClient
-
-import streamlit as st
-
-st.title("Cognitive search bar")
-
-search_text = st.text_input(
-    "Cognitive search bar", value="luxury", max_chars=None, key=None, type="default"
-)
-
-
-index_name = "hotels"
-endpoint = os.environ["SEARCH_ENDPOINT"]
-credential = AzureKeyCredential(os.environ["ACS_API_KEY"])
-
-
-search_client = SearchClient(
-    endpoint=endpoint, index_name=index_name, credential=credential
-)
-
-results = search_client.search(search_text=search_text)
-results_df = pd.DataFrame([r for r in results])
-
-search_output = st.dataframe(results_df)
-
-```
 To test if everything is working, you can run the app locally:
 ```
 conda env create -f environment.yml
@@ -226,21 +72,9 @@ streamlit run my-search-engine-demo/user_interface.py
 ```
 ### Step 6: Create your Dockerfile
 Now we've tested our app locally and verified that everything is working it's time to make it deployable. We will create a docker image where we install the dependencies and our app. 
-```
-# Dockerfile
-FROM continuumio/miniconda3
-EXPOSE 8501
 
-# Copy files
-COPY . .
-# Install dependencies
-RUN conda env create -f demo_environment.yml
-# Activate conda environment
-SHELL ["conda", "run", "-n", "my-search-engine-demo", "/bin/bash", "-c"]
+## NEEDS REWRITE
 
-# Run the interface
-CMD streamlit run ./my-search-engine-demo/user_interface.py
-```
 ### Step 7: Run your application
 To build the docker image run:
 
@@ -248,7 +82,6 @@ To build the docker image run:
 docker build --build-arg BUILDTIME_ACS_API_KEY=${ACS_API_KEY} --build-arg BUILDTIME_ACS_ENDPOINT=${ACS_ENDPOINT} --build-arg BUILDTIME_SA_CONN_STR=${SA_CONN_STR} -t my-search-engine-demo:latest
  .
 ```
-
 
 To run the image in a docker container:
 ```
@@ -275,9 +108,11 @@ Create an [azure container registry](https://docs.microsoft.com/en-us/azure/cont
 
 tag your image with the login server/image name:tag
 
-at access key enable admin
+at access keys: 
+1) enable admin
+2) Get the username and password
 
-Get the username and password fro the access keys tab and
+login in your terminal
 ```
 docker login <<servername>> 
 ```

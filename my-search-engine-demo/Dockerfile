@@ -19,7 +19,4 @@ ENV SA_CONN_STR=${BUILDTIME_SA_CONN_STR}
 RUN conda env create -f demo_environment.yml
 SHELL ["conda", "run", "-n", "my-search-engine-demo", "/bin/bash", "-c"]
 
-# WORKDIR /my-search-engine-demo
-# ENTRYPOINT ["streamlit", "run"]
-# CMD ["user_interface.py"]
 CMD streamlit run ./my-search-engine-demo/user_interface.py

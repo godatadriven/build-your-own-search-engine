@@ -73,8 +73,8 @@ def get_table_download_link(data:pd.DataFrame, search_text):
 
 
 #Title
-st.title("Covid-19 search engine")
-
+# st.title("Covid-19 search engine")
+st.markdown("<h1 style='text-align: center; '>Covid-19 search engine</h1>", unsafe_allow_html=True)
 #Logo
 logo_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'facemask.jpg')
 robeco_logo = Image.open(logo_path)

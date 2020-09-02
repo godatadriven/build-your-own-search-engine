@@ -255,6 +255,9 @@ To run the image in a docker container:
 docker run -p 80:80 my-search-engine-demo:latest
 ```
 
+
+
+
 ### Step 8: Test your application
 Your application should now be running on localhost:8501. When you navigate there you should see something like this:
 ![user interface](img/user_interface.png)
@@ -267,6 +270,24 @@ You can enter queries in the search bar, and the results will be returned in the
 Add the image to Azure container registry
 Create a web app based on the image
 Put it behind active directory.
+
+Create an [azure container registry](https://docs.microsoft.com/en-us/azure/container-registry/container-registry-get-started-portal):
+
+tag your image with the login server/image name:tag
+
+at access key enable admin
+
+Get the username and password fro the access keys tab and
+```
+docker login <<servername>> 
+```
+
+Now push your image to the container registry:
+```
+docker push login server/image name:tag
+```
+
+
 
 ### Limitations
 * The functionality of your app is limited to the functionality that streamlit provides.

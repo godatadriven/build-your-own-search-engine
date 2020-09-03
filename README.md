@@ -108,6 +108,10 @@ Create an [azure container registry](https://docs.microsoft.com/en-us/azure/cont
 
 tag your image with the login server/image name:tag
 
+```
+docker tag SOURCE_IMAGE[:TAG] {login server}/{image name}:{tag}
+```
+
 at access keys: 
 1) enable admin
 2) Get the username and password
@@ -119,7 +123,7 @@ docker login <<servername>>
 
 Now push your image to the container registry:
 ```
-docker push login server/image name:tag
+docker push server/image name:tag
 ```
 
 

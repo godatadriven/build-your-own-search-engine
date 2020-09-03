@@ -1,5 +1,5 @@
 FROM python:3.8-slim-buster
-EXPOSE 80
+EXPOSE 8080
 
 COPY . .
 RUN pip install -r requirements.txt
@@ -18,7 +18,5 @@ ENV ACS_API_KEY=${BUILDTIME_ACS_API_KEY}
 ARG BUILDTIME_SA_CONN_STR
 ENV SA_CONN_STR=${BUILDTIME_SA_CONN_STR}
 
-# RUN conda env create -f demo_environment.yml
-# SHELL ["conda", "run", "-n", "my-search-engine-demo", "/bin/bash", "-c"]
+CMD streamlit run ./my-search-engine-demo/user_interface.py 
 
-CMD streamlit run ./my-search-engine-demo/user_interface.py

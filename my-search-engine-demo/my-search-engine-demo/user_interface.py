@@ -134,9 +134,16 @@ if search_query != "":
     ]
 
     if record_list:
+        st.write(f'Search results ({response.get("@odata.count")}):')
+
+        if response.get('@odata.count') > 100:
+            shown_results = 100
+        else:
+            shown_results = w
+
 
         for i, record in paginator(
-            f"Select results (showing 100 of {response.get('@odata.count')} results)",
+            f"Select results (showing {shown_results} of {response.get('@odata.count')} results)",
             record_list,
         ):
             st.write("%s. **%s**" % (i, record["title"]))
@@ -145,7 +152,7 @@ if search_query != "":
         st.sidebar.markdown(
             get_download_results_href(response, search_query), unsafe_allow_html=True
         )
-        st.write(f'Search results ({response.get("@odata.count")}):')
+        
     else:
         st.write(f"No Search results, please try again with different keywords")
 

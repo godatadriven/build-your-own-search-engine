@@ -70,7 +70,7 @@ runOnSave = false
 
 # The port where the server will listen for client and browser connections.
 # Default: 8501
-port = 80
+port = 8080
 
 # Enables support for Cross-Origin Request Sharing, for added security.
 # Default: true

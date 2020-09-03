@@ -79,8 +79,7 @@ Now we've tested our app locally and verified that everything is working it's ti
 To build the docker image run:
 
 ```
-docker build --build-arg BUILDTIME_ACS_API_KEY=${ACS_API_KEY} --build-arg BUILDTIME_ACS_ENDPOINT=${ACS_ENDPOINT} --build-arg BUILDTIME_SA_CONN_STR=${SA_CONN_STR} -t my-search-engine-demo:latest
- .
+docker build --build-arg BUILDTIME_ACS_API_KEY=${ACS_API_KEY} --build-arg BUILDTIME_ACS_ENDPOINT=${ACS_ENDPOINT} --build-arg BUILDTIME_SA_CONN_STR=${SA_CONN_STR} -t my-search-engine-demo:latest .
 ```
 
 To run the image in a docker container:
@@ -111,6 +110,20 @@ tag your image with the login server/image name:tag
 ```
 docker tag SOURCE_IMAGE[:TAG] {login server}/{image name}:{tag}
 ```
+
+```
+docker build --build-arg BUILDTIME_ACS_API_KEY=${ACS_API_KEY} --build-arg BUILDTIME_ACS_ENDPOINT=${ACS_ENDPOINT} --build-arg BUILDTIME_SA_CONN_STR=${SA_CONN_STR} -t markplayground.azurecr.io/covid-19-search:latest .
+```
+
+```
+docker push markplayground.azurecr.io/covid-19-search:latest
+```
+
+```
+docker run -p 8080:8080 markplayground.azurecr.io/covid-19-search:latest
+```
+
+docker tag SOURCE_IMAGE[:TAG] {login server}/{image name}:{tag}
 
 at access keys: 
 1) enable admin

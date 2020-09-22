@@ -90,7 +90,7 @@ When you have added the environmental variables open a new terminal and run the 
 First install the dependencies. You probably want to do this in a virtual environment E.g.
 ```
 virtualenv <name_env>
-source activate <name_env>
+source <name_env>/bin/activate
 pip install -r my-search-engine-demo/requirements.txt
 ```
 

@@ -139,7 +139,7 @@ if search_query != "":
         if response.get('@odata.count') > 100:
             shown_results = 100
         else:
-            shown_results = w
+            shown_results = response.get('@odata.count')
 
 
         for i, record in paginator(

@@ -265,6 +265,6 @@ class SearchService:
 
 if __name__ == "__main__":
     search_service = SearchService()
-    search_service.delete_search_service()
+    # search_service.delete_search_service()
     search_service.setup_search_service()
     

@@ -134,3 +134,5 @@ dmypy.json
 
 data/
 notebooks/private/
+
+*.pptx

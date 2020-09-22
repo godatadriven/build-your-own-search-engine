@@ -20,7 +20,11 @@ I stored the articles in the blob storage and used the cognitive search API to i
 ![](img/solution_design.png)
 
 # The code
-Before we start clone the [code repository](https://github.com/godatadriven/build-your-own-search-engine) to a folder on your computer. Which minor changes you can tweak it to create you own search engine with different files.
+Before we start clone the [code repository](https://github.com/godatadriven/build-your-own-search-engine) to a folder on your computer. Which minor changes you can tweak it to create you own search engine with different files. Navigate to the build-your-own-search-engine.
+
+```
+cd build-your-own-search-engine 
+```
 
 # The dataset
 Lets look at the dataset first to get an idea what we are dealing with. The dataset contains over 1.5 Million Covid-19 related articles. They are gathered over a period from Nov 2019 to July 2020 from ~440 global sources. You can download the full set [here](https://blog.aylien.com/free-coronavirus-news-dataset/) (please note it is >7 GB).
@@ -43,11 +47,20 @@ This will create a file called "aylien_covid_news_data_sample.jsonl". In this fi
 # The blob storage
 We need to store the data in the Azure Blob Storage. If you don't have an azure account, [subscribe for free](https://azure.microsoft.com/en-us/free/). First [create a storage account](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-create?tabs=azure-portal) and then [create a container](https://docs.microsoft.com/en-us/azure/storage/blobs/storage-quickstart-blobs-portal). Then upload the created "aylien_covid_news_data_sample.jsonl" file into the container.
 
-Look up the storage account connection string and register it on your machine as an environmental variable (for me on a macbook I added the following line to the .bash_profile file)
+Look up the storage account connection string and register it on your machine as an environmental variable (for me on a macbook I added the following line to the .bash_profile file). On Mac, you can find this file in your /Users/username folder. If you get stuck here, google on how to add environmental variables for your operating system.
+
+You can find your connection string on the azure portal here:
+
+![](img/screenshots/Slide1.jpeg)
+
+Make sure to remove the part after ==; so that it looks something like this:
 
 ```
-export SA_CONN_STR='DefaultEndpointsProtocol=https;AccountName=XXX;AccountKey=XX==;'
+export SA_CONN_STR='DefaultEndpointsProtocol=https;AccountName=XXX;AccountKey=XXX==;'
 ```
+
+In the storage account, create a container called covid-news
+
 # The search engine
 This is all about the indexation of the articles. To index them we must:
 * Create a data source [read the docs](https://docs.microsoft.com/en-us/rest/api/searchservice/create-data-source)
@@ -55,17 +68,29 @@ This is all about the indexation of the articles. To index them we must:
 * Create an indexer [read the docs](https://docs.microsoft.com/en-us/rest/api/searchservice/create-indexer)
 * Run the indexer [read the docs](https://docs.microsoft.com/en-us/rest/api/searchservice/run-indexer)
 
-Look up the API key and url and register them on your machine as  environmental variables.
+I've created a script for you that takes care of this. But before you can run it, you have to create the search service. 
+In the azure portal, navigate to the azure search service. Create a new search service. Write down the url from the overview page. This is the ACS_ENDPOINT. Then nevigate to the keys tab in the pane on the left. The primary admin key is your ACS_API_KEY. Also add your client ip in the networking tab. Do not forget to hit save.
+
+Register the ACS_ENDPOINT and ACS_API_KEY on your machine as  environmental variables.
+
+You can find them from the Azure portal here:
+![](img/screenshots/Slide2.jpeg)
+
+When exporting your environmental variables please note the trailing slash in the ACS_ENDPOINT.
 
 ```
 export ACS_API_KEY=XXX
 export ACS_ENDPOINT='https://XXX.search.windows.net/'
 ```
 
+Please note the '/' at the end of the ACS_ENDPOINT.
+
 When you have added the environmental variables open a new terminal and run the setup script:
 
-First install the dependencies:
+First install the dependencies. You probably want to do this in a virtual environment E.g.
 ```
+virtualenv <name_env>
+source activate <name_env>
 pip install -r my-search-engine-demo/requirements.txt
 ```
 
@@ -74,7 +99,7 @@ python my-search-engine-demo/my-search-engine-demo/setup_acs.py
 ```
 This will trigger the indexation process. Wait until you see 'Indexer created correctly...' and some fance ASCII art which tells you that the indexation is done.
 
-If you are running into timeout errors, please check if your IP is whitelisted in Azure Cognitive Search. 
+If you are running into timeout errors, please check if your IP is whitelisted from the networking settings in the azure portal for in Azure Cognitive Search. If not, please add your IP.
 
 # The user interface
 For the user interface we will create a streamlit app. According to their website: 
@@ -95,11 +120,6 @@ The paginator and download results functions are nice to haves. So you can leave
 You can try it out locally by running:
 ```
 streamlit run my-search-engine-demo/my-search-engine-demo/user_interface.py
-```
-
-To test if everything is working, you can run the app locally:
-```
-streamlit run my-search-engine-demo/user_interface.py
 ```
 
 # Deploying your user interface
@@ -157,6 +177,9 @@ You are almost there! The last step is to publish the image as a webpage accessi
 3) Choose Configure container and select Azure Container Registry. Use the drop-down lists to select the registry you created earlier, and the Docker image and tag that you generated earlier.
 
 Now create your service. When your service is created head to the service URL to access your website!
+
+The above steps should look something like:
+![](img/screenshots/Slide4.jpeg)
 
 If the website is accessible, but the search bar does not show, please try a more expensive plan. You can scale down again after. This is a bug.
 

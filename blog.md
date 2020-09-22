@@ -45,7 +45,11 @@ python preprocessing_sample.py
 This will create a file called "aylien_covid_news_data_sample.jsonl". In this file there are 50 sample records. If you want all the data, run the preprocessing_all.py script instead. This will create a set of files containing 100K documents each.
 
 # The blob storage
-We need to store the data in the Azure Blob Storage. If you don't have an azure account, [subscribe for free](https://azure.microsoft.com/en-us/free/). First [create a storage account](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-create?tabs=azure-portal) and then [create a container](https://docs.microsoft.com/en-us/azure/storage/blobs/storage-quickstart-blobs-portal). Then upload the created "aylien_covid_news_data_sample.jsonl" file into the container.
+We need to store the data in the Azure Blob Storage. If you don't have an azure account, [subscribe for free](https://azure.microsoft.com/en-us/free/). First [create a storage account](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-create?tabs=azure-portal) and then [create a container](https://docs.microsoft.com/en-us/azure/storage/blobs/
+
+Make sure the name of the container is "covid-news" or to alter the container name in the setup_acs.py script later.
+
+storage-quickstart-blobs-portal). Then upload the created "aylien_covid_news_data_sample.jsonl" file into the container.
 
 Look up the storage account connection string and register it on your machine as an environmental variable (for me on a macbook I added the following line to the .bash_profile file). On Mac, you can find this file in your /Users/username folder. If you get stuck here, google on how to add environmental variables for your operating system.
 

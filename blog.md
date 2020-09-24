@@ -136,7 +136,9 @@ According to their website:
 
 What we will do is create a docker image. On this image, we will install the required dependencies, and copy and the required code for the user interface.
 
-We build the image by running:
+We build the image from the my-search-engine-demo/my-search-engine-demo directory by running:
+
+
 ```
 docker build --build-arg BUILDTIME_ACS_API_KEY=${ACS_API_KEY} --build-arg BUILDTIME_ACS_ENDPOINT=${ACS_ENDPOINT} --build-arg BUILDTIME_SA_CONN_STR=${SA_CONN_STR} -t covid-19-search:latest .
 ```

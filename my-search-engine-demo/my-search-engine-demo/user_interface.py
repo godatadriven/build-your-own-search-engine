@@ -69,13 +69,14 @@ def get_download_results_href(response, search_text):
     out: href string
     """
 
-    document = "title;body\n"
+    document = "title;date;body\n"
     for result in response.get("value"):
         title = re.sub(";", "", result["title"])
+        date = re.sub(";", "", result["timestamp"][:10])
         body = re.sub(";", "", result["body"])
         body = re.sub("\n", "", body)
         body = body + "\n"
-        line = ";".join([title, body])
+        line = ";".join([title, date, body])
         document = document + line
 
     camelcase = "_".join(search_text.split())
@@ -119,7 +120,7 @@ search_body = {
     "search": search_query,
     "searchFields": "title",
     "searchMode": "all",
-    "select": "title, body",
+    "select": "title, body, timestamp",
     "top": 100,
 }
 
@@ -129,7 +130,7 @@ if search_query != "":
 
     record_list = []
     _ = [
-        record_list.append({"title": record["title"], "body": record["body"]})
+        record_list.append({"title": record["title"], "body": record["body"], "timestamp": record["timestamp"]})
         for record in response.get("value")
     ]
 
@@ -145,9 +146,11 @@ if search_query != "":
         for i, record in paginator(
             f"Select results (showing {shown_results} of {response.get('@odata.count')} results)",
             record_list,
-        ):
-            st.write("%s. **%s**" % (i, record["title"]))
-            st.write("%s" % (record["body"]))
+        ):  
+            st.write("**Search result:** %s." % (i+1))
+            st.write("**Title:** %s" % (record["title"]))
+            st.write("**Date:** %s" % (record["timestamp"][:10]))
+            st.write("**Body:** %s" % (record["body"]))
 
         st.sidebar.markdown(
             get_download_results_href(response, search_query), unsafe_allow_html=True

@@ -20,7 +20,7 @@ I stored the articles in the blob storage and used the cognitive search API to i
 ![](img/solution_design.png)
 
 # The code
-Before we start clone the [code repository](https://github.com/godatadriven/build-your-own-search-engine) to a folder on your computer. Which minor changes you can tweak it to create you own search engine with different files. Navigate to the build-your-own-search-engine.
+Before we start, clone the [code repository](https://github.com/godatadriven/build-your-own-search-engine) to a folder on your computer. Which minor changes you can tweak it to create you own search engine with different files. Navigate to the build-your-own-search-engine.
 
 ```
 cd build-your-own-search-engine 
@@ -45,7 +45,7 @@ python preprocessing_sample.py
 This will create a file called "aylien_covid_news_data_sample.jsonl". In this file there are 50 sample records. If you want all the data, run the preprocessing_all.py script instead. This will create a set of files containing 100K documents each.
 
 # The blob storage
-We need to store the data in the Azure Blob Storage. If you don't have an azure account, [subscribe for free](https://azure.microsoft.com/en-us/free/). First [create a storage account](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-create?tabs=azure-portal) and then [create a container](https://docs.microsoft.com/en-us/azure/storage/blobs/
+We need to store the data in the Azure Blob Storage. If you don't have an azure account, [subscribe for free](https://azure.microsoft.com/en-us/free/). First [create a storage account](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-create?tabs=azure-portal) and then [create a container](https://docs.microsoft.com/en-us/azure/storage/blobs/).
 
 Make sure the name of the container is "covid-news" or to alter the container name in the setup_acs.py script later.
 
@@ -55,7 +55,7 @@ Look up the storage account connection string and register it on your machine as
 
 You can find your connection string on the azure portal here:
 
-![](img/screenshots/Slide1.jpeg)
+![](img/screenshots/storage-account-details.jpeg)
 
 Make sure to remove the part after ==; so that it looks something like this:
 
@@ -78,7 +78,7 @@ In the azure portal, navigate to the azure search service. Create a new search s
 Register the ACS_ENDPOINT and ACS_API_KEY on your machine as  environmental variables.
 
 You can find them from the Azure portal here:
-![](img/screenshots/Slide2.jpeg)
+![](img/screenshots/acs-details.jpeg)
 
 When exporting your environmental variables please note the trailing slash in the ACS_ENDPOINT.
 
@@ -185,7 +185,7 @@ You are almost there! The last step is to publish the image as a webpage accessi
 Now create your service. When your service is created head to the service URL to access your website!
 
 The above steps should look something like:
-![](img/screenshots/Slide4.jpeg)
+![](img/screenshots/web-app-details.jpeg)
 
 If the website is accessible, but the search bar does not show, please try a more expensive plan. You can scale down again after. This is a bug.
 

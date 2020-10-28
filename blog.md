@@ -39,13 +39,15 @@ I'm interested in the following information:
 * Article title: to index the article on & show as a search result
 * Article body: to index the article on & show as a search result
 
-When you've downloaded the dataset, unpack it and put it in the data folder in the cloned directory. Open your terminal, go to the data folder and run 
+For the sake of this blog, I recommend to use a prepared subset of the data which is stored in the repository (data/aylien_covid_news_data_sample.jsonl). If you want to use the full set however, follow the next steps:
+
+After downloading the dataset, unpack it and put it in the data folder in the cloned directory. Open your terminal, go to the data folder and run 
 
 ```
 python preprocessing_sample.py
 ```
 
-This will create a file called "aylien_covid_news_data_sample.jsonl". In this file there are 50 sample records. If you want all the data, run the preprocessing_all.py script instead. This will create a set of files containing 100K documents each.
+This will create a file called "aylien_covid_news_data_sample.jsonl". In this file there are 50 sample records. If you want all the data, run the preprocessing_all.py script instead. This will create a set of files containing 100K documents each. Note that downloading, preprocessing, uploading, and indexing of all the records will take significant time, which is why I recommend to just use the sample.
 
 # Step 3: Store the data in the cloud
 We need to store the data in the Azure Blob Storage. If you don't have an azure account, [subscribe for free](https://azure.microsoft.com/en-us/free/). First [create a storage account](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-create?tabs=azure-portal) and then [create a container](https://docs.microsoft.com/en-us/azure/storage/blobs/storage-quickstart-blobs-portal). Make sure the name of the container is "covid-news" or alter the used container name in the setup_acs.py script later.
@@ -118,7 +120,7 @@ For the user interface we will create a streamlit app. According to their websit
 
 > "Streamlit’s open-source app framework is the easiest way for data scientists and machine learning engineers to create beautiful, performant apps in only a few hours!  All in pure Python. All for free.""
 
-Let's put that to the shall we? Check out the "my-search-engine-demo/my-search-engine-demo/user_interface.py" file in the repository to check out how the user interface is made.
+Let's put that to the test shall we? Check out the "my-search-engine-demo/my-search-engine-demo/user_interface.py" file in the repository to check out how the user interface is made.
 
 The paginator and download results functions are nice to haves. So, you can leave them out if you want to. The essentials are the following
 
@@ -154,9 +156,11 @@ This way we create a docker image tagged with "my-search-engin-demo:latest". The
 
 To test if your image was build correctly run it locally:
 ```
-docker run -p 80:80 covid-19-search:latest
+docker run -p 8080:8080 covid-19-search:latest
 ```
-You should now be able to access the user interface from your browser with localhost:80. 
+You should now be able to access the user interface from your browser with localhost:8080. 
+
+The exposed port is specified in the Dockerfile. If you want to expose the service on a different port, alter it there.
 
 ### Azure Container Registry
 Now we must create an [azure container registry](https://docs.microsoft.com/en-us/azure/container-registry/container-registry-get-started-portal). Write down the server name, which is something like "XXX.azurecr.io

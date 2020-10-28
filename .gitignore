@@ -132,7 +132,8 @@ dmypy.json
 # IDE
 .DS_Store
 
-data/
+data/*
+!data/aylien_covid_news_data_sample.jsonl
 notebooks/private/
 
 *.pptx

@@ -1,163 +1,214 @@
-Productionizing ML: build your own search engine
+# How to Build Your Own Covid-19 Search Engine
 
-# Build your own search engine
-There are many ways to put your data science work into production. But there is one thing they all have in common. It never comes easy. Every now and then you come across a pragmatic approach that is simple and works in standard occasions. I’m about to explain one of these. The use case we’re covering is building a private google like search engine and interface to query news articles about Covid-19. The dataset contains 550K articles scraped from the web. The dataset was provided by [Aylien](https://aylien.com/coronavirus-news-dataset/).
+The amount of information around us is constantly increasing, with over 3 million blogs published on the web every day (Internetlivestats, 2020). Indexing this information made Google great — their search engine processes a whopping 3.5 billion + searches a day (Internetlivestats, 2020). 
+
+Meanwhile, Covid-19 has the world in its grip. As scientists measure and observe progress of the disease, we all learn a bit more as they publish their findings in papers, articles and blogs everyday. I found myself curious to learn what all is out there.
+In my explorations I stumbled across [this](https://aylien.com/coronavirus-news-dataset/) dataset with 550K articles about Covid-19. It sealed the deal: I was going to build myself a search engine for articles related to Covid-19. I created my own tool for understanding the pandemic better, and in this blog I'll share how I did it. For those of you who can't wait, click [here](https://covid-19-search.Azurewebsites.net/) to check it out.
+
+# Anatomy of an Covid-19 Search Engine
+In the end my Covid-19 search engine looked like this:
 
 ![](img/covid-19-search.gif)
 
-To get to this point we need an **analytics engine** to rank the documents we want to search through. We will use [Azure Cognitive Search](https://pypi.org/project/azure-search-documents/), but you could also choose alternatives such as [Elasticsearch](https://elasticsearch-py.readthedocs.io/en/master/). Also we must have a **user interface** to interact with the search engine, and to display results. We choose [Streamlit](https://www.streamlit.io/).Eventually we need to deploy the solution somewhere, and possibly limit access to it with some **access management**. We decided to go with docker, as it is cloud agnostic. In this example however, we deploy the docker image with Azure App Services. With Azure Active Directory your can limit access to people within your network for example. 
+To build this solution I used of the following technology:
 
-The infrastructure will look something like this:
-![](img/infra.png)
+* Search engine: [Azure Cognitive Search](https://azure.microsoft.com/en-us/services/cognitive-services/)
+* Data storage: [Azure Blob Storage](https://azure.microsoft.com/en-us/services/storage/blobs/)
+* User interface: [Docker](https://www.docker.com/) and [Streamlit](https://www.streamlit.io/)
+* App Deployment: [Azure Container Registry](https://azure.microsoft.com/en-us/services/container-registry/) and [Azure App Services](https://azure.microsoft.com/en-us/services/app-service/)
 
-## Dependencies
-To build your own search enging you must have an [Azure subscription](https://azure.microsoft.com/en-us/free/) and create an [Azure Cognitive Search service](https://docs.microsoft.com/en-us/azure/search/search-create-service-portal). Follow the links to get set up.
-Additionally you need to install [Docker](https://docs.docker.com/get-docker/) to run your solution on your machinie.
+First, I'll outline my overall process. I started out by storing the articles in the blob storage, using the cognitive search API to index all of them. Then I created a simple user interface with a search bar for entering queries. The search bar sends the search query to the cognitive search API, which returns the most relevant results. To deploy the whole application, I embedded it in a Docker image which I pushed to the Azure Container Registry. Azure App Services then deploys this image as a website, which can be found [here](https://covid-19-search.Azurewebsites.net/). A schematic visualization of the whole solution is shown below.
 
-## Setting up the API
-* Follow the [Manual](https://docs.microsoft.com/en-us/azure/search/search-create-service-portal) to create the service
+![](img/solution_design.png)
 
-* Read the [API documentation](https://pypi.org/project/azure-search-documents/#adding-documents-to-your-index) better understand the search engine.
+Let's go through each step in more detail, so you can recreate the solution yourself.
 
-## Setting up environment variables
-To make sure your credentials do not end up in your code repositories, add your endpoint and secret from the search service to your environment variables (get them from the [azure portal](https://portal.azure.com/) or [Azure CLI](https://docs.microsoft.com/en-gb/cli/azure/install-azure-cli?view=azure-cli-latest))
-
-I work on mac and added the following lines to my .bash_profile file. 
-```
-export ACS_API_KEY=<admin-key>
-export ACI_ENDPOINT=<service url>
-```
-To make sure that they're loaded in your terminal run:
-```
-source ~/.bash_profile
-```
-If you work on a different Operating System, adding the environment variables might be different.
-
-
-## The code
-In ten steps, we will explain how to get your search engine running. The code can also be found in the Clone this example from the [repository](https://github.com/godatadriven/build-your-own-search-engine).
-
-### Step 1: Create your environment file
-Before we write any code, we will specify our dependencies in an environment file. We will use this file to let conda install the required dependencies in our Docker image later. Add the following to the #demo-environment.yml
-
-## NEEDS REWRITE
-
-### Step 2: Create your documents file
-We want our search index to help us find relevant documents. For this tutorial, we are going to index information about hotels, but this can be any type of information.
-
-## NEEDS REWRITE
-
-### Step 3: Create your index file
-The search API requires a predefined index. In this index you specify which fields can be inspected in the documents that you will upload. You can also state the data types, how text fields should be analyzed and many more optios. We must define the index based on the documents that we want to index. For now, just create the hotel_index.py with the following code:
-## NEEDS REWRITE
-
-### Step 4: Create your initialization script
-Uptil now, the search API does not know about the index and the documents yet. Therefore it must be initialized. We will first initalize the index, and then upload our documents to the search engine. It will then index the documents according to the index that you provided. Create the initialize_acs.py as follows:
-
-## NEEDS REWRITE
-
-To initialize the API, run the file
-```
-python my-search-engine-demo/search.py
-```
-
-### Step 5: Create your user interface script
-For the user interface, we want a search bar, and a list with tanked results. We will create them with Streamlit. To connect the interface with the API, we will connect to the search API and send the search query to it. The results that come back will be rendered as a dataframe. To replicate the UI, create the user_interface.py as follows: 
-
-To test if everything is working, you can run the app locally:
-```
-conda env create -f environment.yml
-conda activate my-search-engine-demo
-streamlit run my-search-engine-demo/user_interface.py
-```
-### Step 6: Create your Dockerfile
-Now we've tested our app locally and verified that everything is working it's time to make it deployable. We will create a docker image where we install the dependencies and our app. 
-
-## NEEDS REWRITE
-
-### Step 7: Run your application
-To build the docker image run:
+# Step 1: Get the code
+Before we start, clone the [code repository](https://github.com/godatadriven/build-your-own-search-engine) to a folder on your computer. With minor changes you can tweak it to create your own search engine with different files. Use your terminal to navigate to the build-your-own-search-engine folder, here you can find all the code.
 
 ```
-docker build --build-arg BUILDTIME_ACS_API_KEY=${ACS_API_KEY} --build-arg BUILDTIME_ACS_ENDPOINT=${ACS_ENDPOINT} --build-arg BUILDTIME_SA_CONN_STR=${SA_CONN_STR} -t my-search-engine-demo:latest .
+cd build-your-own-search-engine 
 ```
 
-To run the image in a docker container:
-```
-docker run -p 80:80 my-search-engine-demo:latest
-```
+# Step 2: Get the data
+Let’s look at the dataset first, to get an idea what we are dealing with. The dataset contains over 1.5 million Covid-19-related articles, gathered from Nov 2019 to July 2020 from over 400 global sources. You can download the full set [here](https://blog.aylien.com/free-coronavirus-news-dataset/) (please note it is >7 GB).
 
+In the interface I want to be able to show the article date, source, title, and content. Therefore I'm interested in the following variables in the dataset:
+* Identifier: to uniquely identify the documents
+* Timestamp: to sort the articles on recency
+* Source: to check where the data comes from
+* Article title: to index the article on & show as a search result
+* Article body: to index the article on & show as a search result
 
+For simplicity, I recommend using the prepared subset of articles which is stored in the repository (data/aylien_covid_news_data_sample.jsonl). However, if you want to use the full, follow the next steps.
 
-
-### Step 8: Test your application
-Your application should now be running on localhost:8501. When you navigate there you should see something like this:
-![user interface](img/user_interface.png)
-
-You can enter queries in the search bar, and the results will be returned in the interface.
-
-
-### Step 9: Deployment
-[Deploy and run a container app service](https://docs.microsoft.com/en-us/learn/modules/deploy-run-container-app-service/)
-Add the image to Azure container registry
-Create a web app based on the image
-Put it behind active directory.
-
-Create an [azure container registry](https://docs.microsoft.com/en-us/azure/container-registry/container-registry-get-started-portal):
-
-tag your image with the login server/image name:tag
+After downloading the dataset, unpack it and put it in the data folder in the cloned directory. Open your terminal, go to the data folder and run the following code.
 
 ```
-docker tag SOURCE_IMAGE[:TAG] {login server}/{image name}:{tag}
+python preprocessing_sample.py
 ```
 
-```
-docker build --build-arg BUILDTIME_ACS_API_KEY=${ACS_API_KEY} --build-arg BUILDTIME_ACS_ENDPOINT=${ACS_ENDPOINT} --build-arg BUILDTIME_SA_CONN_STR=${SA_CONN_STR} -t markplayground.azurecr.io/covid-19-search:latest .
-```
+This will create a file called "aylien_covid_news_data_sample.jsonl". In this file there are 50 sample records. If you want all the data, run the preprocessing_all.py script instead. This will create a set of files containing 100K documents each. Note that downloading, preprocessing, uploading, and indexing of all the records will take a significant amount of time, which is why I recommend to using the prepared subset instead.
+
+# Step 3: Store the data in the cloud
+We need to store the data in the Azure Blob Storage. If you don't have an Azure account, [subscribe for free](https://azure.microsoft.com/en-us/free/). First [create a storage account](https://docs.microsoft.com/en-us/Azure/storage/common/storage-account-create?tabs=Azure-portal) and then [create a container](https://docs.microsoft.com/en-us/Azure/storage/blobs/storage-quickstart-blobs-portal). Make sure the name of the container is "covid-news" or alter the used container name in the setup_acs.py script later.
+Finally, upload the created "aylien_covid_news_data_sample.jsonl" file into the container you have created.
+
+Look up the storage account connection string. You can find your connection string on the Azure portal here:
+
+![](img/screenshots/storage-account-details.jpeg)
+ 
+We need to register this string as an environment variable called `SA_CONN_STR` on your machine. The connection string that you copy from the UI has an obsolete part at the end which would break our solution. Therefore, make sure to delete the part of the string after the `==;`. Then, add the following line to your `~/.bash_profile`, replacing the part between the quotes with the relevant part of your connection string: 
 
 ```
-docker push markplayground.azurecr.io/covid-19-search:latest
+export SA_CONN_STR='DefaultEndpointsProtocol=https;AccountName=XXX;AccountKey=XXX==;'
 ```
 
-```
-docker run -p 8080:8080 markplayground.azurecr.io/covid-19-search:latest
-```
+Open a new terminal and check if your connection string is correctly stored as an environment variable by running:
 
-docker tag SOURCE_IMAGE[:TAG] {login server}/{image name}:{tag}
-
-at access keys: 
-1) enable admin
-2) Get the username and password
-
-login in your terminal
 ```
-docker login <<servername>> 
+echo $SA_CONN_STR
 ```
 
-Now push your image to the container registry:
+If you did it right, this should print the connection string. If you get stuck here, google on how to add environment variables to your operating system.
+
+# Step 4: Build the search engine
+To index articles you need to do four things:
+* Create a data source [read the docs](https://docs.microsoft.com/en-us/rest/api/searchservice/create-data-source)
+* Create an index [read the docs](https://docs.microsoft.com/en-us/rest/api/searchservice/create-index)
+* Create an indexer [read the docs](https://docs.microsoft.com/en-us/rest/api/searchservice/create-indexer)
+* Run the indexer [read the docs](https://docs.microsoft.com/en-us/rest/api/searchservice/run-indexer)
+
+I've created a script for you that takes care of this. But before you can run it, you have to create the search service.
+
+In the Azure portal, navigate to the Azure search service. Create a new search service. Write down the URL from the overview page. This is the ACS_ENDPOINT. Then navigate to the keys tab in the pane on the left. The primary admin key is your ACS_API_KEY. Also add your client IP in the networking tab. Do not forget to hit save!
+
+Now, also register the ACS_ENDPOINT and ACS_API_KEY on your machine as environment variables.
+
+You can find them from the Azure portal here:
+![](img/screenshots/acs-details.jpeg)
+
+When exporting your environmental variables please note the trailing slash in the ACS_ENDPOINT.
+
+```
+export ACS_API_KEY=XXX
+export ACS_ENDPOINT='https://XXX.search.windows.net/'
+```
+
+Please note the '/' at the end of the ACS_ENDPOINT.
+
+When you have added the environment variables open a new terminal and run the setup script:
+
+First install the dependencies. You probably want to do this in a virtual environment E.g.
+```
+virtualenv <name_env>
+source <name_env>/bin/activate
+pip install -r my-search-engine-demo/requirements.txt
+```
+
+Then run the following command:
+
+```
+python my-search-engine-demo/my-search-engine-demo/setup_acs.py
+```
+
+This will trigger the indexation process. Wait until you see "Indexer created correctly..." and some fancy ASCII art which tells you that the indexation is done.
+
+If you are running into timeout errors, please check if your IP is whitelisted from the networking settings in the Azure portal for in Azure Cognitive Search. If not, please add your IP.
+
+# Step 5: Develop the user interface
+For the user interface we will create a Streamlit app. According to their website: 
+
+> "Streamlit’s open-source app framework is the easiest way for data scientists and machine learning engineers to create beautiful, performant apps in only a few hours!  All in pure Python. All for free.""
+
+Let's put that to the test shall we? Check out the "my-search-engine-demo/my-search-engine-demo/user_interface.py" file in the repository to check out how the user interface is made.
+
+The paginator and download results functions are nice to haves. So, you can leave them out if you want to. The following are essential:
+
+1) Create a title
+2) Render an image
+3) Create the search bar
+4) Load the API secrets
+5) Send the search query to the API
+6) Render the results
+
+You can try it out locally by running:
+```
+streamlit run my-search-engine-demo/my-search-engine-demo/user_interface.py
+```
+
+# Step 6: Deploy the user interface
+
+### Docker image
+For this part you need to [install Docker](https://docs.docker.com/get-docker/) on your local machine. 
+
+According to their website:
+> "Docker is an open platform for developing, shipping, and running applications. Docker enables you to separate your applications from your infrastructure so you can deliver software quickly."
+
+We will create a Docker image, with the required dependencies and the code for the user interface.
+
+We build the image from the my-search-engine-demo/my-search-engine-demo directory by running:
+
+```
+docker build --build-arg BUILDTIME_ACS_API_KEY=${ACS_API_KEY} --build-arg BUILDTIME_ACS_ENDPOINT=${ACS_ENDPOINT} --build-arg BUILDTIME_SA_CONN_STR=${SA_CONN_STR} -t covid-19-search:latest .
+```
+
+This way we create a docker image tagged with "my-search-engin-demo:latest". The environmental variables will be copied into the image.
+
+To test if your image was build correctly run it locally:
+```
+docker run -p 8080:8080 covid-19-search:latest
+```
+You should now be able to access the user interface from your browser with localhost:8080. 
+
+The exposed port is specified in the Dockerfile. If you want to expose the service on a different port, alter it there.
+
+### Azure container registry
+Now we must create an [Azure container registry](https://docs.microsoft.com/en-us/Azure/container-registry/container-registry-get-started-portal). Write down the server name, which is something like "XXX.Azurecr.io
+
+From the access keys menu, enable admin and write down the username and password so you can log into the server.
+
+Now it is time to push the image to the registry. First, we tag our image with the login server/image name:tag. 
+
+```
+docker tag covid-19-search:latest {login server}/{image name}:{tag}
+```
+It will look something like "XXX.Azurecr.io/covid-19-search:latest"
+
+Second, we log into the server
+```
+docker login <<servername e.g. XXX.Azurecr.io>> 
+```
+
+Third, we push our image to the server:
 ```
 docker push server/image name:tag
 ```
 
+You should now see the image in your Container Registry repository. 
 
+### Azure app services
+You are almost done! The last step is to publish the image as a webpage accessible from the internet.
 
-### Limitations
-* The functionality of your app is limited to the functionality that streamlit provides.
-* The solution is intended for a limited audience and limited loads. Scalability is therefore limited.
-* There is no monitoring in place 
+1) In the Azure portal, go to Azure app services and add a web app.
 
+2) Enter a name for your new web app and select or create a new resource group. For the operating system, choose Linux.
 
-### Do it yourself!
-Obviously, with three documents, this is only the start. Clone this example from the [repository](https://github.com/godatadriven/build-your-own-search-engine) and adjust the index and documents to match your requirements. Play around with the search api to finetune your results and you should have your own search engine up and running in no time!
+3) Choose "configure container" and select Azure Container Registry. Use the drop-down lists to select the registry you created, and the Docker image and tag that you generated earlier.
 
-Also, when we look at our approach from a higher level, you might notice that you could replace the analytics engine with something else. A different python package for example. At GoDataDriven we often build specific python packages for our clients, making this approach applicable to multiple use cases.
-The same is true for the interface. For now we used Streamlit, but you can replace this with different interfaces when your requirments demand so. 
+Now create your service. Once that's done head to the service URL to access your website!
+
+The above steps should look something like:
+![](img/screenshots/web-app-details.jpeg)
+
+If the website is accessible, but it seems to load forever (the search bar does not show), you might have stumbled upon a bug. I fixed it by upgrading to a more expensive plan, and scaled back to the cheaper plan after. This might raise some eyebrows, including my own, but it did the trick. If you find the cause, please let me know,
 
 # Conclusion
-In this tutorial, we've showed that it is possible to build a simple analytics engine with and interface with python. We've also shown that deploying it as a minimal viable product is not too complex when we use Azure App Services. In the process we've seen to use Azure Cognitive Search to build your own search engine. You can change the analytics engine, with any python package or API
+Building you own search engine by indexing articles with the cognitive search API is easier than you might think! In this blog we've covered how to use Streamlit to interact with the search engine and learned how to dockerize and deploy the solution as a web app. 
 
-I hope that you will put this tutorial to creative use in the future!
+I hope that by reading this blog you've gained one of these three insights.
+1) Found relevant information regarding Covid-19.
+2) Identified an opportunity to alter this solution to a different dataset.
+3) Identified an opportunity to alter this solution to replace the search engine with a different analytics engine.
 
-Good luck!
-
-
+If you did, don't hesitate to share! I'd love to hear about it. Also, feel free to contribute to the code base!

@@ -211,4 +211,4 @@ I hope that by reading this blog you've gained one of these three insights.
 2) Identified an opportunity to alter this solution to a different dataset.
 3) Identified an opportunity to alter this solution to replace the search engine with a different analytics engine.
 
-If you did, don't hesitate to share! I'd love to hear about it. Also, feel free to contribute to the code base!
+Don't hesitate to share what you've learned in the comments below, or to contribute to the code base!

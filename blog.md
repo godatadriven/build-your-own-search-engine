@@ -173,11 +173,11 @@ Now it is time to push the image to the registry. First, we tag our image with t
 ```
 docker tag covid-19-search:latest {login server}/{image name}:{tag}
 ```
-It will look something like "XXX.Azurecr.io/covid-19-search:latest"
+It will look something like "XXX.azurecr.io/covid-19-search:latest"
 
 Second, we log into the server
 ```
-docker login <<servername e.g. XXX.Azurecr.io>> 
+docker login <<servername e.g. XXX.azurecr.io>> 
 ```
 
 Third, we push our image to the server:

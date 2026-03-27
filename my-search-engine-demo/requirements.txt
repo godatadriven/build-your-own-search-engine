@@ -1,5 +1,5 @@
 numpy==1.18.1
 requests==2.24.0
-streamlit==0.64.0
+streamlit==1.54.0
 azure-core==1.8.0
 pillow==7.2.0
